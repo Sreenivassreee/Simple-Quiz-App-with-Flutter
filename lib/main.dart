@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'questionMadel.dart';
+import 'QuestionsBrain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+
+QuestionsBrain Qb = QuestionsBrain();
 
 void main() => runApp(MyApp());
 
@@ -7,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Quiz",
+      title: "Basic Quiz",
       theme: ThemeData.dark(),
       home: MyHomeScreen(),
     );
@@ -22,25 +26,18 @@ class MyHomeScreen extends StatefulWidget {
 }
 
 class _MyHomeScreenState extends State<MyHomeScreen> {
-  List<Question> myQuestion = [
-    Question(
-        "1. Approximately one quarter of human bones are in the feet,", false),
-    Question(
-        "2.Approximately one quarter of human bones are in the feet,", true),
-    Question(
-        "3.Approximately one quarter of human bones are in the feet,", true),
-    Question(
-        "4.Approximately one quarter of human bones are in the feet,", false),
-  ];
-
   int QuestionNumber = 0;
   List<Icon> ShowResult = [];
+  int state = 0;
+  int Score = 0;
+  int Total = Qb.getLength() + 1;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Quiz App"),
+        title: Text("Basic Quiz"),
+        centerTitle: true,
       ),
       body: Container(
           child: Column(
@@ -49,10 +46,13 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
           Flexible(
             flex: 8,
             child: Center(
-              child: Text(
-                myQuestion[QuestionNumber].question,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 26.0),
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Text(
+                  Qb.giveQuestion(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 26.0),
+                ),
               ),
             ),
           ),
@@ -67,26 +67,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                   width: double.infinity,
                   height: 85.0,
                   child: FlatButton(
-                    onPressed: () {
-                      setState(() {
-                        if (myQuestion[QuestionNumber].answer == true) {
-                          ShowResult.add(
-                            Icon(
-                              Icons.check,
-                              color: Colors.green,
-                            ),
-                          );
-                        } else {
-                          ShowResult.add(
-                            Icon(
-                              Icons.close,
-                              color: Colors.red,
-                            ),
-                          );
-                        }
-                        QuestionNumber++;
-                      });
-                    },
+                    onPressed: () => validate(true),
                     child: Text(
                       "True",
                       textAlign: TextAlign.center,
@@ -103,26 +84,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                   width: double.infinity,
                   height: 85.0,
                   child: FlatButton(
-                    onPressed: () {
-                      setState(() {
-                        if (myQuestion[QuestionNumber].answer == false) {
-                          ShowResult.add(
-                            Icon(
-                              Icons.check,
-                              color: Colors.green,
-                            ),
-                          );
-                        } else {
-                          ShowResult.add(
-                            Icon(
-                              Icons.close,
-                              color: Colors.red,
-                            ),
-                          );
-                        }
-                        QuestionNumber++;
-                      });
-                    },
+                    onPressed: () => validate(false),
                     child: Text(
                       "False",
                       textAlign: TextAlign.center,
@@ -143,5 +105,71 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
         ],
       )),
     );
+  }
+
+  void validate(bool pressed) {
+    if (state == 0) {
+      setState(
+        () {
+          if (Qb.giveAnswer() == pressed) {
+            Score++;
+            ShowResult.add(
+              Icon(
+                Icons.check,
+                color: Colors.green,
+              ),
+            );
+          } else {
+            ShowResult.add(
+              Icon(
+                Icons.close,
+                color: Colors.red,
+              ),
+            );
+          }
+        },
+      );
+    }
+    state = Qb.updateQuestionNumber();
+
+    if (state == 1) {
+      showAlert();
+      print(state);
+    }
+  }
+
+  showAlert() {
+    return Alert(
+      context: context,
+      type: AlertType.warning,
+      title: "Quiz is Over ",
+      desc: "No of Correct Ansers ${(Score / Total * 100).toStringAsFixed(1)}.",
+      buttons: [
+        DialogButton(
+          child: Text(
+            "Play Again",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          onPressed: () {
+            Score = 0;
+
+            Navigator.pop(context);
+            setState(() {
+              Qb.reset();
+              ShowResult.clear();
+            });
+          },
+          color: Colors.green,
+        ),
+        DialogButton(
+          child: Text(
+            "Cancel",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          onPressed: () => Navigator.pop(context),
+          color: Colors.red,
+        )
+      ],
+    ).show();
   }
 }

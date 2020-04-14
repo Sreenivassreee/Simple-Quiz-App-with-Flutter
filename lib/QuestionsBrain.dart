@@ -1,6 +1,8 @@
 import 'package:simple_quiz/questionMadel.dart';
 
 class QuestionsBrain {
+  int QNumber = 0;
+
   List<Question> BrainQuestions = [
     Question('Some cats are actually allergic to humans', true),
     Question('You can lead a cow down stairs but not up stairs.', false),
@@ -28,4 +30,31 @@ class QuestionsBrain {
         'In West Virginia, USA, if you accidentally hit an animal with your car, you are free to take it home to eat.',
         true),
   ];
+
+  int getLength() {
+    return BrainQuestions.length - 1;
+  }
+
+  void reset() {
+    QNumber = 0;
+  }
+
+  int updateQuestionNumber() {
+    if (QNumber < BrainQuestions.length - 1) {
+      QNumber++;
+      print(QNumber);
+      print(BrainQuestions.length - 1);
+      return 0;
+    } else {
+      return 1;
+    }
+  }
+
+  String giveQuestion() {
+    return BrainQuestions[QNumber].question;
+  }
+
+  bool giveAnswer() {
+    return BrainQuestions[QNumber].answer;
+  }
 }
