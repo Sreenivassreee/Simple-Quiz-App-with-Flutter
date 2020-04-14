@@ -1,9 +1,9 @@
 import 'package:simple_quiz/questionMadel.dart';
 
 class QuestionsBrain {
-  int QNumber = 0;
+  int _QNumber = 0;
 
-  List<Question> BrainQuestions = [
+  List<Question> _BrainQuestions = [
     Question('Some cats are actually allergic to humans', true),
     Question('You can lead a cow down stairs but not up stairs.', false),
     Question('Approximately one quarter of human bones are in the feet.', true),
@@ -31,30 +31,36 @@ class QuestionsBrain {
         true),
   ];
 
-  int getLength() {
-    return BrainQuestions.length - 1;
-  }
-
   void reset() {
-    QNumber = 0;
+    _QNumber = 0;
   }
 
-  int updateQuestionNumber() {
-    if (QNumber < BrainQuestions.length - 1) {
-      QNumber++;
-      print(QNumber);
-      print(BrainQuestions.length - 1);
-      return 0;
-    } else {
-      return 1;
+  int getLength() {
+    return _BrainQuestions.length - 1;
+  }
+
+  void updateQuestionNumber() {
+    if (_QNumber < _BrainQuestions.length - 1) {
+      _QNumber++;
+
+//      print(BrainQuestions.length - 1);
+
     }
   }
 
   String giveQuestion() {
-    return BrainQuestions[QNumber].question;
+    return _BrainQuestions[_QNumber].question;
   }
 
   bool giveAnswer() {
-    return BrainQuestions[QNumber].answer;
+    return _BrainQuestions[_QNumber].answer;
+  }
+
+  int state() {
+    if (_QNumber < _BrainQuestions.length - 1) {
+      return 0;
+    } else {
+      return 1;
+    }
   }
 }

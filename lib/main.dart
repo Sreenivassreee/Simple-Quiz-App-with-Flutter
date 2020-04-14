@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
       title: "Basic Quiz",
       theme: ThemeData.dark(),
       home: MyHomeScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -26,7 +27,6 @@ class MyHomeScreen extends StatefulWidget {
 }
 
 class _MyHomeScreenState extends State<MyHomeScreen> {
-  int QuestionNumber = 0;
   List<Icon> ShowResult = [];
   int state = 0;
   int Score = 0;
@@ -108,33 +108,36 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
   }
 
   void validate(bool pressed) {
-    if (state == 0) {
+    if (Qb.state() == 1) {
+      setState(() {
+        showAlert();
+      });
+    } else if (Qb.state() == 0) {
       setState(
         () {
           if (Qb.giveAnswer() == pressed) {
-            Score++;
-            ShowResult.add(
-              Icon(
-                Icons.check,
-                color: Colors.green,
-              ),
-            );
+            setState(() {
+              Score++;
+              ShowResult.add(
+                Icon(
+                  Icons.check,
+                  color: Colors.green,
+                ),
+              );
+            });
           } else {
-            ShowResult.add(
-              Icon(
-                Icons.close,
-                color: Colors.red,
-              ),
-            );
+            setState(() {
+              ShowResult.add(
+                Icon(
+                  Icons.close,
+                  color: Colors.red,
+                ),
+              );
+            });
           }
+          Qb.updateQuestionNumber();
         },
       );
-    }
-    state = Qb.updateQuestionNumber();
-
-    if (state == 1) {
-      showAlert();
-      print(state);
     }
   }
 
@@ -151,12 +154,11 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
           onPressed: () {
-            Score = 0;
-
+            Qb.reset();
             Navigator.pop(context);
             setState(() {
-              Qb.reset();
-              ShowResult.clear();
+              ShowResult = [];
+              Score = 0;
             });
           },
           color: Colors.green,
