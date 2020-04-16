@@ -146,7 +146,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
       context: context,
       type: AlertType.warning,
       title: "Quiz is Over ",
-      desc: "No of Correct Ansers ${(Score / Total * 100).toStringAsFixed(1)}.",
+      desc: "The Persentage You got  ${(Score / Total * 100).toStringAsFixed(1)}.",
       buttons: [
         DialogButton(
           child: Text(
